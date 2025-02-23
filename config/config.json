@@ -14,10 +14,10 @@
     "dialect": "postgres"
   },
   "production": {
-    "username": "chet",
-    "password": "funny",
-    "database": "Deltdb",
-    "host": "localhost",
+    "username": "app_rw_zl7g3mgbdtuutukt33ezlvgukm",
+    "password": "zgGApHOWxN-q-Q0zgjUTeglya0cITtcn",
+    "database": "dkyxfno5rvhut6pzag4ylhgltpa",
+    "host": "pg-tunnel.borealis-data.com",
     "dialect": "postgres"
   }
 }

@@ -7,7 +7,7 @@ var session = require('express-session'); // import session to keep track of use
 var app = express();
 
 const passport = require('./passport'); // import the passport configuration
-const PORT = 80;
+const PORT = 5001 || process.env.PORT; //port for server
 // use sequelize orm for database
 const db = require("./models");
 const {User, Meal, RSVP} = require('./models');
@@ -127,10 +127,10 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
     if (req.user.firstName == null) {
         // console.log(req.session.isAuthenticated +"\n");
          // associate the UserID with the session object
-        res.redirect(FRONTENDURL || 'http://localhost:3000/?signUp=true');
+        res.redirect(FRONTENDURL+ "?signUp=true" || 'http://localhost:3000/?signUp=true');
         // res.redirect('http://localhost:3000/');
     } else {
-        res.redirect(FRONTENDURL || 'http://localhost:3000/?signUp=false');
+        res.redirect(FRONTENDURL + "?signUp=false" || 'http://localhost:3000/?signUp=false');
     }
   }
 );
@@ -535,8 +535,8 @@ db.sequelize.sync({ force: true }).then(() => {
     // Finally, sync RSVP model, which depends on Meal and User
     return db.RSVP.sync();
   }).then(() => {
-    app.listen(5001, () => {
-      console.log("Listening on: http://localhost:5001\n");
+    app.listen(PORT, () => {
+      console.log("Listening on port:  " + PORT);
     });
   }).catch((err) => {
     console.error('Error syncing models:', err);

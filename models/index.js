@@ -1,4 +1,5 @@
 'use strict';
+// require('dotenv').config();
 
 const fs = require('fs');
 const path = require('path');
@@ -9,13 +10,24 @@ const env = 'production'; // process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
-let sequelize= new Sequelize(process.env.DATABASE_URL);;
+// console.log("process.env.DATABASE_URL: ", process.env.DATABASE_URL);
+let sequelize= new Sequelize(process.env.DATABASE_URL, {
+  dialect: 'postgres',
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false, // Set this to false if you're connecting to a database with an untrusted SSL certificate
+    },
+  },
+});
+// let sequelize;
 // if (config.use_env_variable) {
 //   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 // } else {
 //   // should use this one
-//   // sequelize = new Sequelize(config.database, config.username, config.password, config);
-//   sequelize = new Sequelize("postgres://chet:funny@postgres:5432/Deltdb");
+//   // console.log("config: ", config + " " + config.database + " " + config.username + " " + config.password);
+//   sequelize = new Sequelize(config.database, config.username, config.password, config);
+//   // sequelize = new Sequelize("postgres://chet:funny@postgres:5432/Deltdb");
 // }
 
 fs
