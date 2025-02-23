@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "chet",
+    "password": "funny",
+    "database": "Deltdb",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "chet",
+    "password": "funny",
+    "database": "database_test",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "chet",
+    "password": "funny",
+    "database": "Deltdb",
+    "host": "localhost",
+    "dialect": "postgres"
+  }
+}
