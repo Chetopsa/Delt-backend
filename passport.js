@@ -1,7 +1,18 @@
+require('dotenv').config();
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const { User } = require('./models'); // Adjust the import based on your project structure
-const {secrets} = require('./google_keys.json')
+const secrets = {
+  client_id: process.env.REACT_APP_CLIENT_ID,
+  project_id: process.env.REACT_APP_PROJECT_ID,
+  auth_uri: process.env.REACT_APP_AUTH_URI,
+  token_uri: process.env.REACT_APP_TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.REACT_APP_AUTH_PROVIDER_X509_CERT_URL,
+  client_secret: process.env.REACT_APP_CLIENT_SECRET,
+  redirect_uris: JSON.parse(process.env.REACT_APP_REDIRECT_URIS),
+  javascript_origins: JSON.parse(process.env.REACT_APP_JAVASCRIPT_ORIGINS)
+};
+
 
 passport.use(new GoogleStrategy({
   clientID: secrets.client_id, // Replace with your Google client ID
