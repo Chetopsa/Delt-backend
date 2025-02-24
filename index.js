@@ -22,12 +22,12 @@ app.use(cors({
     credentials: true, // allow cookies to be sent
   }));
 
-// let SequelizeStore = require("connect-session-sequelize")(session.Store);
+let SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 app.use(express.json()); // middleware for parsing
 
 app.use(session({ // middleware for storing user info
-    // store: new pgSession({ pool }),
+    store: {db: db.sequelize,},
     secret: "pooperscooper",
     saveUninitialized: true,
     resave: false,
@@ -112,9 +112,10 @@ app.get('/api/validation', (req,res) => {
 // define the callback route for Google
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: FRONTENDURL || 'http://localhost:3000/' }), async (req, res) => {
     // successful authentication, redirect to another page
-
+    
     req.session.isAuthenticated = true;
     req.session.userID = req.user.userID;
+    console.log("login call back | is_auth:" + req.session.isAuthenticated + " id:" + req.session.userID);
 
     // fetch user isAdmin from db where userID = req.user.userID, to find admin status
 
@@ -522,26 +523,26 @@ app.get('/deletequew392934', isAuthenticated, isAdmin, (req, res) => {
     useful for devlopment but probably shouldn't be used in production because we might
     accidently drop a table if we alter our model schema
 */
-// db.sequelize.sync({alter: true}).then((req) => {
-//     app.listen(process.env.PORT || 5001, () => {
-//         console.log("lsitneing on: "+ FRONTENDURL ||  " http://localhost:3001\n");
+db.sequelize.sync({alter: true}).then((req) => {
+    app.listen(process.env.PORT || 5001, () => {
+        console.log("lsitneing on: "+ FRONTENDURL ||  " http://localhost:3001\n");
 
-//     });
-// });
-
-db.sequelize.sync({ force: true }).then(() => {
-    // Sync Meal model first
-    return db.Meal.sync();
-  }).then(() => {
-    // Sync User model second
-    return db.User.sync();
-  }).then(() => {
-    // Finally, sync RSVP model, which depends on Meal and User
-    return db.RSVP.sync();
-  }).then(() => {
-    app.listen(process.env.PORT || PORT, () => {
-      console.log("Listening on port:  " + process.env.PORT || PORT);
     });
-  }).catch((err) => {
-    console.error('Error syncing models:', err);
-  });
+});
+
+// db.sequelize.sync({ force: true }).then(() => {
+//     // Sync Meal model first
+//     return db.Meal.sync();
+//   }).then(() => {
+//     // Sync User model second
+//     return db.User.sync();
+//   }).then(() => {
+//     // Finally, sync RSVP model, which depends on Meal and User
+//     return db.RSVP.sync();
+//   }).then(() => {
+//     app.listen(process.env.PORT || PORT, () => {
+//       console.log("Listening on port:  " + process.env.PORT || PORT);
+//     });
+//   }).catch((err) => {
+//     console.error('Error syncing models:', err);
+//   });
