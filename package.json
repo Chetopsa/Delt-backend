@@ -11,6 +11,7 @@
   "author": "Cheston Opsasnick",
   "license": "ISC",
   "dependencies": {
+    "connect-pg-simple": "^10.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.1",
@@ -19,7 +20,7 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "path": "^0.12.7",
-    "pg": "^8.13.1",
+    "pg": "^8.13.3",
     "sequelize": "^6.37.5"
   },
   "description": "# requirements - node.js - postgresql database - google OAuth 2.0",

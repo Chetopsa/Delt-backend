@@ -46,6 +46,7 @@ const databaseUrl = process.env.DATABASE_URL; // Assuming it's something like 'p
 
 let sequelize = new Sequelize(databaseUrl, {
   dialect: 'postgres',
+  protocol: 'postgres',
   dialectOptions: {
     ssl: {
       require: true,
@@ -53,6 +54,9 @@ let sequelize = new Sequelize(databaseUrl, {
     },
   },
 });
+sequelize.authenticate()
+  .then(() => console.log('Database connected'))
+  .catch(err => console.error('Database connection error:', err));
 
 // let sequelize;
 // if (config.use_env_variable) {
