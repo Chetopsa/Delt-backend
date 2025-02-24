@@ -1,4 +1,4 @@
-
+console.log("init");
 require('dotenv').config();
 // include the express modules
 var express = require("express");
