@@ -12,6 +12,7 @@ const PORT = 5001 || process.env.PORT; //port for server
 const db = require("./models");
 const {User, Meal, RSVP} = require('./models');
 
+
 const cors = require('cors'); // allows for cross orgin requests liek when using google auth
 const { user } = require('./config/config');
 const FRONTENDURL = "https://deltsdine.vercel.app"; // make null for dev
@@ -20,12 +21,9 @@ app.use(cors({
     methods: ['GET', 'POST'],
     credentials: true, // allow cookies to be sent
   }));
-const pgSession = require('connect-pg-simple')(session);
-const { Pool } = require('pg');
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false } // Needed for Heroku
-});
+
+// let SequelizeStore = require("connect-session-sequelize")(session.Store);
+
 app.use(express.json()); // middleware for parsing
 
 app.use(session({ // middleware for storing user info
