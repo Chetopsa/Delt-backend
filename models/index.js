@@ -44,6 +44,16 @@ const sequelize = new Sequelize({
   },
 });
 
+// let sequelize = new Sequelize(databaseUrl, {
+//   dialect: 'postgres',
+//   dialectOptions: {
+//     ssl: {
+//       require: true,
+//       rejectUnauthorized: false,
+//     },
+//   },
+// });
+
 // let sequelize;
 // if (config.use_env_variable) {
 //   sequelize = new Sequelize(process.env[config.use_env_variable], config);
