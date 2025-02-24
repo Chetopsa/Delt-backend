@@ -36,7 +36,7 @@ app.use(session({ // middleware for storing user info
     resave: false,
     cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 7, // milisends * seconds * minutes * hours * days (7 days)
-        secure: true,
+       
     },
   }
 ));
@@ -86,6 +86,7 @@ app.get('/auth/google', passport.authenticate('google', {scope: ['email']}));
 */
 app.get('/api/validation', (req,res) => {
     console.log("user check auth api: " + req.session.isAuthenticated + "  user: " +req.session.userID, " isAdmin: " + req.session.isAdmin);
+    console.log(sessionStore);
     if (req.session.isAuthenticated) {
         res.json({authorized: true, userID:req.session.userID, isAdmin: req.session.isAdmin}); 
     } else {
