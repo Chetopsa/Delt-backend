@@ -26,10 +26,11 @@ let SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 app.use(express.json()); // middleware for parsing
 
+const sessionStore = new SequelizeStore({
+    db: db.sequelize
+  });
 app.use(session({ // middleware for storing user info
-    store: new SequelizeStore({
-        db: db.sequelize,
-    }),
+    store: sessionStore,
     secret: "pooperscooper",
     saveUninitialized: false,
     resave: false,
@@ -39,7 +40,7 @@ app.use(session({ // middleware for storing user info
   }
 ));
 // Sync the session store with the DB
-SequelizeStore.sync();
+sessionStore.sync();
 
 app.use(passport.initialize());
 app.use(passport.session());
