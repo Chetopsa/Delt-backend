@@ -31,13 +31,15 @@ app.use(session({ // middleware for storing user info
         db: db.sequelize,
     }),
     secret: "pooperscooper",
-    saveUninitialized: true,
+    saveUninitialized: false,
     resave: false,
     cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 7 // milisends * seconds * minutes * hours * days (7 days)
     },
   }
 ));
+// Sync the session store with the DB
+sessionStore.sync();
 
 app.use(passport.initialize());
 app.use(passport.session());
