@@ -20,10 +20,16 @@ app.use(cors({
     methods: ['GET', 'POST'],
     credentials: true, // allow cookies to be sent
   }));
-  
+const pgSession = require('connect-pg-simple')(session);
+const { Pool } = require('pg');
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false } // Needed for Heroku
+});
 app.use(express.json()); // middleware for parsing
 
 app.use(session({ // middleware for storing user info
+    store: new pgSession({ pool }),
     secret: "pooperscooper",
     saveUninitialized: true,
     resave: false,
@@ -518,26 +524,26 @@ app.get('/deletequew392934', isAuthenticated, isAdmin, (req, res) => {
     useful for devlopment but probably shouldn't be used in production because we might
     accidently drop a table if we alter our model schema
 */
-// db.sequelize.sync({alter: true}).then((req) => {
-//     app.listen(3001, () => {
-//         console.log("lsitneing on: "+ FRONTENDURL ||  " http://localhost:3001\n");
+db.sequelize.sync({alter: true}).then((req) => {
+    app.listen(3001, () => {
+        console.log("lsitneing on: "+ FRONTENDURL ||  " http://localhost:3001\n");
 
-//     });
-// });
-
-db.sequelize.sync({ force: true }).then(() => {
-    // Sync Meal model first
-    return db.Meal.sync();
-  }).then(() => {
-    // Sync User model second
-    return db.User.sync();
-  }).then(() => {
-    // Finally, sync RSVP model, which depends on Meal and User
-    return db.RSVP.sync();
-  }).then(() => {
-    app.listen(PORT, () => {
-      console.log("Listening on port:  " + PORT);
     });
-  }).catch((err) => {
-    console.error('Error syncing models:', err);
-  });
+});
+
+// db.sequelize.sync({ force: true }).then(() => {
+//     // Sync Meal model first
+//     return db.Meal.sync();
+//   }).then(() => {
+//     // Sync User model second
+//     return db.User.sync();
+//   }).then(() => {
+//     // Finally, sync RSVP model, which depends on Meal and User
+//     return db.RSVP.sync();
+//   }).then(() => {
+//     app.listen(PORT, () => {
+//       console.log("Listening on port:  " + PORT);
+//     });
+//   }).catch((err) => {
+//     console.error('Error syncing models:', err);
+//   });
