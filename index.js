@@ -34,6 +34,8 @@ app.use(session({ // middleware for storing user info
     secret: "pooperscooper",
     saveUninitialized: true,
     resave: false,
+    proxy: true,
+    tableName: 'user_session',
     cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 7, // milisends * seconds * minutes * hours * days (7 days)
        
@@ -536,25 +538,25 @@ app.get('/deletequew392934', isAuthenticated, isAdmin, (req, res) => {
     accidently drop a table if we alter our model schema
 */
 // db.sequelize.sync({alter: true}).then((req) => {
-app.listen(process.env.PORT || 5001, () => {
-    console.log("lsitneing on: "+ FRONTENDURL ||  " http://localhost:3001\n");
+// app.listen(process.env.PORT || 5001, () => {
+//     console.log("lsitneing on: "+ FRONTENDURL ||  " http://localhost:3001\n");
 
-});
+// });
 // });
 
-// db.sequelize.sync({ force: true }).then(() => {
-//     // Sync Meal model first
-//     return db.Meal.sync();
-//   }).then(() => {
-//     // Sync User model second
-//     return db.User.sync();
-//   }).then(() => {
-//     // Finally, sync RSVP model, which depends on Meal and User
-//     return db.RSVP.sync();
-//   }).then(() => {
-//     app.listen(process.env.PORT || PORT, () => {
-//       console.log("Listening on port:  " + process.env.PORT || PORT);
-//     });
-//   }).catch((err) => {
-//     console.error('Error syncing models:', err);
-//   });
+db.sequelize.sync({ force: true }).then(() => {
+    // Sync Meal model first
+    return db.Meal.sync();
+  }).then(() => {
+    // Sync User model second
+    return db.User.sync();
+  }).then(() => {
+    // Finally, sync RSVP model, which depends on Meal and User
+    return db.RSVP.sync();
+  }).then(() => {
+    app.listen(process.env.PORT || PORT, () => {
+      console.log("Listening on port:  " + process.env.PORT || PORT);
+    });
+  }).catch((err) => {
+    console.error('Error syncing models:', err);
+  });

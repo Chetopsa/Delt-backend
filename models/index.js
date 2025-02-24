@@ -10,8 +10,8 @@ const env = 'production'; // process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
-console.log("process.env.DATABASE_URL: ", process.env.DATABASE_URL);
-const databaseUrl = process.env.DATABASE_URL; // Assuming it's something like 'postgres://username:password@localhost:5432/mydb'
+console.log("process.env.DATABASE_URL: ", process.env.HEROKU_POSTGRESQL_COBALT_URL);
+const databaseUrl = process.env.HEROKU_POSTGRESQL_COBALT_URL; // Assuming it's something like 'postgres://username:password@localhost:5432/mydb'
 
 // const parsedUrl = new URL(databaseUrl);
 
