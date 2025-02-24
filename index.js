@@ -35,7 +35,8 @@ app.use(session({ // middleware for storing user info
     saveUninitialized: false,
     resave: false,
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 7 // milisends * seconds * minutes * hours * days (7 days)
+        maxAge: 1000 * 60 * 60 * 24 * 7, // milisends * seconds * minutes * hours * days (7 days)
+        secure: true,
     },
   }
 ));
