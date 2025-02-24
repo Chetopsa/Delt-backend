@@ -13,39 +13,29 @@ const db = {};
 console.log("process.env.DATABASE_URL: ", process.env.DATABASE_URL);
 const databaseUrl = process.env.DATABASE_URL; // Assuming it's something like 'postgres://username:password@localhost:5432/mydb'
 
-const parsedUrl = new URL(databaseUrl);
+// const parsedUrl = new URL(databaseUrl);
 
 // Extract components
-const username = parsedUrl.username;
-const password = parsedUrl.password;
-const host = parsedUrl.hostname;
-const port = parsedUrl.port;
-const database = parsedUrl.pathname.split('/')[1]; // Removes the leading "/"
+// const username = parsedUrl.username;
+// const password = parsedUrl.password;
+// const host = parsedUrl.hostname;
+// const port = parsedUrl.port;
+// const database = parsedUrl.pathname.split('/')[1]; // Removes the leading "/"
   
-console.log({
-  username,
-  password,
-  host,
-  port,
-  database,
-});
-const sequelize = new Sequelize({
-  dialect: 'postgres',
-  database: database,
-  username: username,
-  password: password,
-  host: host,
-  port: port,
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  },
-});
-
-// let sequelize = new Sequelize(databaseUrl, {
+// console.log({
+//   username,
+//   password,
+//   host,
+//   port,
+//   database,
+// });
+// const sequelize = new Sequelize({
 //   dialect: 'postgres',
+//   database: database,
+//   username: username,
+//   password: password,
+//   host: host,
+//   port: port,
 //   dialectOptions: {
 //     ssl: {
 //       require: true,
@@ -53,6 +43,16 @@ const sequelize = new Sequelize({
 //     },
 //   },
 // });
+
+let sequelize = new Sequelize(databaseUrl, {
+  dialect: 'postgres',
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
+});
 
 // let sequelize;
 // if (config.use_env_variable) {
