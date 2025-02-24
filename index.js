@@ -39,7 +39,7 @@ app.use(session({ // middleware for storing user info
   }
 ));
 // Sync the session store with the DB
-sessionStore.sync();
+SequelizeStore.sync();
 
 app.use(passport.initialize());
 app.use(passport.session());
