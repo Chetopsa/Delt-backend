@@ -27,7 +27,7 @@ app.use(cors({
 app.use(express.json()); // middleware for parsing
 
 app.use(session({ // middleware for storing user info
-    store: new pgSession({ pool }),
+    // store: new pgSession({ pool }),
     secret: "pooperscooper",
     saveUninitialized: true,
     resave: false,
