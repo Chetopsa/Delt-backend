@@ -27,7 +27,9 @@ let SequelizeStore = require("connect-session-sequelize")(session.Store);
 app.use(express.json()); // middleware for parsing
 
 app.use(session({ // middleware for storing user info
-    store: {db: db.sequelize,},
+    store: new SequelizeStore({
+        db: db.sequelize,
+    }),
     secret: "pooperscooper",
     saveUninitialized: true,
     resave: false,
