@@ -1,4 +1,3 @@
-console.log("init");
 require('dotenv').config();
 // include the express modules
 var express = require("express");
@@ -35,6 +34,9 @@ app.use(session({ // middleware for storing user info
     saveUninitialized: true,
     resave: false,
     proxy: true,
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
     tableName: 'user_session',
     cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 7, // milisends * seconds * minutes * hours * days (7 days)
