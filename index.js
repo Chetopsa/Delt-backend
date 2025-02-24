@@ -40,6 +40,10 @@ app.use(session({ // middleware for storing user info
     },
   }
 ));
+app.use((req, res, next) => {
+    console.log('Session:', req.session); // Log the session object for debugging
+    next();
+  });
 // Sync the session store with the DB
 sessionStore.sync();
 
@@ -491,7 +495,7 @@ app.get('/select', isAuthenticated, (req, res) => {
  * @body {firstName: string, lastName: string, email: string || null}
  * @response 200 ok || 500 error
  */
-app.post('/makeAdmin', isAuthenticated, isAdmin, (req, res) => {
+app.post('/makeAdmin', isAuthenticated, (req, res) => {
     console.log("hit make admin endpoint");
     const {firstName, lastName, email} = req.body;
     try {
