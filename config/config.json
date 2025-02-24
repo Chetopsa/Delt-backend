@@ -3,14 +3,14 @@
     "username": "chet",
     "password": "funny",
     "database": "Deltdb",
-    "host": "localhost",
+    "host": "pg-tunnel.borealis-data.com",
     "dialect": "postgres"
   },
   "test": {
     "username": "chet",
     "password": "funny",
     "database": "database_test",
-    "host": "127.0.0.1",
+    "host": "pg-tunnel.borealis-data.com",
     "dialect": "postgres"
   },
   "production": {

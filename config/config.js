@@ -1,7 +1,7 @@
 // config.js
 module.exports = {
     user: 'chet',
-    host: 'localhost',
+    host: 'pg-tunnel.borealis-data.com',
     database: 'Deltdb',
     password: 'funny',
     dialect: "postgres",
