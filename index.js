@@ -32,7 +32,7 @@ const sessionStore = new SequelizeStore({
 app.use(session({ // middleware for storing user info
     store: sessionStore,
     secret: "pooperscooper",
-    saveUninitialized: false,
+    saveUninitialized: true,
     resave: false,
     cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 7, // milisends * seconds * minutes * hours * days (7 days)
@@ -40,10 +40,10 @@ app.use(session({ // middleware for storing user info
     },
   }
 ));
-app.use((req, res, next) => {
-    console.log('Session:', req.session); // Log the session object for debugging
-    next();
-  });
+// app.use((req, res, next) => {
+//     console.log('Session:', req.session); // Log the session object for debugging
+//     next();
+//   });
 // Sync the session store with the DB
 sessionStore.sync();
 
@@ -90,7 +90,8 @@ app.get('/auth/google', passport.authenticate('google', {scope: ['email']}));
 */
 app.get('/api/validation', (req,res) => {
     console.log("user check auth api: " + req.session.isAuthenticated + "  user: " +req.session.userID, " isAdmin: " + req.session.isAdmin);
-    console.log(sessionStore);
+    console.log('Session:', req.session.isAuthenticated);
+    // console.log(sessionStore);
     if (req.session.isAuthenticated) {
         res.json({authorized: true, userID:req.session.userID, isAdmin: req.session.isAdmin}); 
     } else {
@@ -534,26 +535,26 @@ app.get('/deletequew392934', isAuthenticated, isAdmin, (req, res) => {
     useful for devlopment but probably shouldn't be used in production because we might
     accidently drop a table if we alter our model schema
 */
-db.sequelize.sync({alter: true}).then((req) => {
-app.listen(process.env.PORT || 5001, () => {
-    console.log("lsitneing on: "+ FRONTENDURL ||  " http://localhost:3001\n");
+// db.sequelize.sync({alter: true}).then((req) => {
+// app.listen(process.env.PORT || 5001, () => {
+//     console.log("lsitneing on: "+ FRONTENDURL ||  " http://localhost:3001\n");
 
-});
-});
+// });
+// });
 
-// db.sequelize.sync({ force: true }).then(() => {
-//     // Sync Meal model first
-//     return db.Meal.sync();
-//   }).then(() => {
-//     // Sync User model second
-//     return db.User.sync();
-//   }).then(() => {
-//     // Finally, sync RSVP model, which depends on Meal and User
-//     return db.RSVP.sync();
-//   }).then(() => {
-//     app.listen(process.env.PORT || PORT, () => {
-//       console.log("Listening on port:  " + process.env.PORT || PORT);
-//     });
-//   }).catch((err) => {
-//     console.error('Error syncing models:', err);
-//   });
+db.sequelize.sync({ force: true }).then(() => {
+    // Sync Meal model first
+    return db.Meal.sync();
+  }).then(() => {
+    // Sync User model second
+    return db.User.sync();
+  }).then(() => {
+    // Finally, sync RSVP model, which depends on Meal and User
+    return db.RSVP.sync();
+  }).then(() => {
+    app.listen(process.env.PORT || PORT, () => {
+      console.log("Listening on port:  " + process.env.PORT || PORT);
+    });
+  }).catch((err) => {
+    console.error('Error syncing models:', err);
+  });
