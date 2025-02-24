@@ -525,7 +525,7 @@ app.get('/deletequew392934', isAuthenticated, isAdmin, (req, res) => {
     accidently drop a table if we alter our model schema
 */
 db.sequelize.sync({alter: true}).then((req) => {
-    app.listen(3001, () => {
+    app.listen(process.env.PORT || 5001, () => {
         console.log("lsitneing on: "+ FRONTENDURL ||  " http://localhost:3001\n");
 
     });
