@@ -1,5 +1,6 @@
 require('dotenv').config();
 // include the express modules
+
 var express = require("express");
 
 var session = require('express-session'); // import session to keep track of users
@@ -31,16 +32,16 @@ const sessionStore = new SequelizeStore({
 app.use(session({ // middleware for storing user info
     store: sessionStore,
     secret: "pooperscooper",
-    saveUninitialized: true,
+    saveUninitialized: false,
     resave: false,
     proxy: true,
-    
     tableName: 'user_session',
     cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 7, // milisends * seconds * minutes * hours * days (7 days)
         httpOnly: true,
         secure: true,
-        sameSite: 'none',
+        domain: 'herokuapp.com',  // Allows sharing between subdomains
+        sameSite: 'Lax',
     },
   }
 ));
@@ -233,7 +234,7 @@ app.post('/api/editMeal', isAuthenticated, isAdmin, async (req, res) => {
     const mealDate = new Date(date + "T00:00:00.000");
     try {
         // find meal by date and isDinner, ensure meal exists
-        const meal = await Meal.findOne({where: {date: mealDate, isDinner: isDinner}});
+        const meal = await Meal.findOne({where: {date: date, isDinner: isDinner}});
         if (!meal) {
             res.status(500).send("Meal does not exist for that date");
             return;
@@ -500,7 +501,7 @@ app.get('/select', isAuthenticated, (req, res) => {
  * @body {firstName: string, lastName: string, email: string || null}
  * @response 200 ok || 500 error
  */
-app.post('/makeAdmin', isAuthenticated, (req, res) => {
+app.post('/makeAdmin', isAuthenticated, isAdmin, (req, res) => {
     console.log("hit make admin endpoint");
     const {firstName, lastName, email} = req.body;
     try {
