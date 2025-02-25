@@ -32,7 +32,7 @@ const sessionStore = new SequelizeStore({
 app.use(session({ // middleware for storing user info
     store: sessionStore,
     secret: "pooperscooper",
-    saveUninitialized: false,
+    saveUninitialized: true,
     resave: false,
     proxy: true,
     tableName: 'user_session',
@@ -41,6 +41,7 @@ app.use(session({ // middleware for storing user info
         httpOnly: true,
         secure: true,
         sameSite: 'lax',
+        domain:'delt-backend-410c344b9c99.herokuapp.com',
     },
   }
 ));
