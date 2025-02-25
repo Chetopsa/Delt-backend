@@ -40,8 +40,7 @@ app.use(session({ // middleware for storing user info
         maxAge: 1000 * 60 * 60 * 24 * 7, // milisends * seconds * minutes * hours * days (7 days)
         httpOnly: true,
         secure: true,
-        sameSite: 'lax',
-        domain:'delt-backend-410c344b9c99.herokuapp.com',
+        sameSite: 'none',
     },
   }
 ));
