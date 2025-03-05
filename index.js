@@ -200,7 +200,8 @@ app.post('/api/addMeal', isAuthenticated, isAdmin, async (req, res) => {
     const mealDate = new Date(date + "T00:00:00Z");
     // console.log(startDate +" <- start date, meal date -> " + mealDate);
     const weekID_ = calculateWeekID(mealDate); 
-    console.log(mealDate.getDay());
+    console.log("weekID: " + weekID_);
+    console.log(mealDate.getUTCDay());
     // can't create new meal if one already exists for that date and time
     const meal = await Meal.findOne({where: {date: mealDate, isDinner: isDinner}});
     if (meal) {
@@ -210,10 +211,10 @@ app.post('/api/addMeal', isAuthenticated, isAdmin, async (req, res) => {
     }
     // console.log("diff weeks: " + diffWeeks);
     await Meal.create({
-        date: date, // date is the string in the format yyyy-mm-dd
+        date: date, // date is the string in the format yyyy-mm-dd 
         description: description,
         isDinner: isDinner,
-        dayOfWeek: mealDate.getDay(),
+        dayOfWeek: mealDate.getUTCDay(),
         spotsAvaliable: spotsAvaliable,
         weekID: weekID_
     }).then((meal) => {
@@ -377,15 +378,15 @@ app.post('/api/newRSVP', isAuthenticated, async (req, res) => {
     // check if it's too late to register for the meal
     // defined by if they are trying to register meal before 
     // 10 am on monday of that week
-    const currentDate = new Date();
-    week_id = calculateWeekID(currentDate);
-    const monday = new Date();
-    monday.setHours(10, 0, 0, 0); // 10:00 AM or whatever time you want the cutoff to be
-    monday.setDate(monday.getDate() - monday.getDay() + 1);
-    if (currentDate > monday && week_id >= calculateWeekID(monday)) {
-        res.json({success: false, message: "It is too late to register for this meal"});
-        return;
-    }
+    // const currentDate = new Date();
+    // week_id = calculateWeekID(currentDate);
+    // const monday = new Date();
+    // monday.setHours(10, 0, 0, 0); // 10:00 AM or whatever time you want the cutoff to be
+    // monday.setDate(monday.getDate() - monday.getDay() + 1);
+    // if (currentDate > monday && week_id >= calculateWeekID(monday)) {
+    //     res.json({success: false, message: "It is too late to register for this meal"});
+    //     return;
+    // }
 
     // create new RSVP
     try {
