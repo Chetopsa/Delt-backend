@@ -43,17 +43,28 @@ const databaseUrl = process.env.HEROKU_POSTGRESQL_COBALT_URL; // Assuming it's s
 //     },
 //   },
 // });
-
-let sequelize = new Sequelize(databaseUrl, {
-  dialect: 'postgres',
-  protocol: 'postgres',
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
+let sequelize;
+if (process.env.DEV == "true") {
+  sequelize = new Sequelize({
+      dialect: 'postgres',
+      database: process.env.DATABASE_NAME,
+      username: process.env.DATABASE_USER,
+      host: process.env.DATABASE_HOST,
+      port: 5432,
+  });
+} else {
+    sequelize = new Sequelize(databaseUrl, {
+    dialect: 'postgres',
+    protocol: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
     },
-  },
-});
+  });
+}
+
 sequelize.authenticate()
   .then(() => console.log('Database connected'))
   .catch(err => console.error('Database connection error:', err));

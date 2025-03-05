@@ -1,10 +1,15 @@
 require('dotenv').config();
 // include the express modules
 
+// set variable for dev mode
+const DEV = process.env.DEV == "true" || false;
+
 var express = require("express");
 
 var session = require('express-session'); // import session to keep track of users
 var app = express();
+
+const path = require('path'); // import path for serving static files
 
 const passport = require('./passport'); // import the passport configuration
 const PORT = 5001 || process.env.PORT; //port for server
@@ -12,10 +17,11 @@ const PORT = 5001 || process.env.PORT; //port for server
 const db = require("./models");
 const {User, Meal, RSVP} = require('./models');
 
-
 const cors = require('cors'); // allows for cross orgin requests liek when using google auth
 const { user } = require('./config/config');
-const FRONTENDURL = "https://deltsdine.vercel.app"; // make null for dev
+
+const FRONTENDURL = null;//"https://deltsdine.vercel.app"; // make null for dev
+
 app.use(cors({
     origin: FRONTENDURL || 'http://localhost:3000', // or your frontend's URL
     methods: ['GET', 'POST'],
@@ -39,9 +45,8 @@ app.use(session({ // middleware for storing user info
     cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 7, // milisends * seconds * minutes * hours * days (7 days)
         httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-    },
+        secure: DEV ? false : true,
+        },
   }
 ));
 // app.use((req, res, next) => {
@@ -53,6 +58,9 @@ sessionStore.sync();
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+// serve the react files from the build folder
+app.use(express.static(path.join(__dirname, "./Delt-client/build")));
 
 // middleware function used in protected routes to ensure user is logged in
 // in the future I think im going to protect all routes and just redirect people to login if they aren't
@@ -78,11 +86,6 @@ function isAdmin(req, res, next) {
     res.status(401).send('Unauthorized: You must be admin');
 }
 
-// default route
-app.get('/', (req, res) => {
-    res.send('hello world');
-});
-
 // google auth route
 
 app.get('/auth/google', passport.authenticate('google', {scope: ['email']}));
@@ -103,7 +106,6 @@ app.get('/api/validation', (req,res) => {
     }
 });
 
-
 /**
  * API for setting the users name and mealPLan status
  * @request POST
@@ -112,7 +114,7 @@ app.get('/api/validation', (req,res) => {
  */
  app.post('/api/setUser', isAuthenticated, async (req,res) => {
     const {firstName, lastName, hasMealPlan} = req.body;
-    const parsedHasMealPlan =  hasMealPlan == "true" ? true : false; // prob back practice to convert to bool on backend, oh well..
+    const parsedHasMealPlan = hasMealPlan == "true" ? true : false; // prob back practice to convert to bool on backend, oh well..
     try {
         await User.update(
             {firstName: firstName, lastName: lastName, hasMealPlan: parsedHasMealPlan},
@@ -126,9 +128,8 @@ app.get('/api/validation', (req,res) => {
  })
 
 // define the callback route for Google
-app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: FRONTENDURL || 'http://localhost:3000/' }), async (req, res) => {
+app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/' }), async (req, res) => {
     // successful authentication, redirect to another page
-    
     req.session.isAuthenticated = true;
     req.session.userID = req.user.userID;
     console.log("login call back | is_auth:" + req.session.isAuthenticated + " id:" + req.session.userID);
@@ -148,10 +149,10 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
     if (req.user.firstName == null) {
         // console.log(req.session.isAuthenticated +"\n");
          // associate the UserID with the session object
-        res.redirect(FRONTENDURL+ "?signUp=true" || 'http://localhost:3000/?signUp=true');
+        res.redirect("/?signUp=true");
         // res.redirect('http://localhost:3000/');
     } else {
-        res.redirect(FRONTENDURL + "?signUp=false" || 'http://localhost:3000/?signUp=false');
+        res.redirect("/?signUp=false");
     }
   }
 );
@@ -372,7 +373,20 @@ app.post('/api/newRSVP', isAuthenticated, async (req, res) => {
     if (meal.spotsTaken >= meal.spotsAvaliable) {
         res.json({success: false, message: "Meal is full"});
         return;
+    } 
+    // check if it's too late to register for the meal
+    // defined by if they are trying to register meal before 
+    // 10 am on monday of that week
+    const currentDate = new Date();
+    week_id = calculateWeekID(currentDate);
+    const monday = new Date();
+    monday.setHours(10, 0, 0, 0); // 10:00 AM or whatever time you want the cutoff to be
+    monday.setDate(monday.getDate() - monday.getDay() + 1);
+    if (currentDate > monday && week_id >= calculateWeekID(monday)) {
+        res.json({success: false, message: "It is too late to register for this meal"});
+        return;
     }
+
     // create new RSVP
     try {
         await RSVP.create({ mealID: mealID, userID: userID, weekID: meal.weekID});
@@ -476,16 +490,17 @@ app.get('/api/getRSVPs', isAuthenticated, async (req, res) => {
     }
 });
 
+// ----------------below this are just testign routes----------------------------------
 app.post('/api/test', (req, res) => {
     res.send("test");
 });
 
-app.get('/profile', isAuthenticated, (req, res) => {
+app.get('/api/profile', isAuthenticated, (req, res) => {
   res.json({ message: `Welcome ${req.user.googleID}` });
 });
 
-// ----------------below this are just testign routes----------------------------------
-app.get('/select', isAuthenticated, (req, res) => {
+
+app.get('/api/select', isAuthenticated, (req, res) => {
     User.findOne( {where: {firstName: "chet"}})
     .then((users) => {
         res.send(users);
@@ -500,7 +515,7 @@ app.get('/select', isAuthenticated, (req, res) => {
  * @body {firstName: string, lastName: string, email: string || null}
  * @response 200 ok || 500 error
  */
-app.post('/makeAdmin', isAuthenticated, isAdmin, (req, res) => {
+app.post('/api/makeAdmin', isAuthenticated, isAdmin, (req, res) => {
     console.log("hit make admin endpoint");
     const {firstName, lastName, email} = req.body;
     try {
@@ -522,7 +537,7 @@ app.post('/makeAdmin', isAuthenticated, isAdmin, (req, res) => {
     console.log("successfullly made admin: " + firstName + " " + lastName);
 });
     
-app.get('/deletequew392934', isAuthenticated, isAdmin, (req, res) => {
+app.get('/api/deletequew392934', isAuthenticated, isAdmin, (req, res) => {
     User.destroy({where: {isAdmin: False}})
     .then(result => {
 
@@ -534,17 +549,33 @@ app.get('/deletequew392934', isAuthenticated, isAdmin, (req, res) => {
     });
     res.send('delete');
 });
+
+/**
+ * Serve the static Reactapp
+ * @request GET
+ * @response {ReactApp}
+ */
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Delt-client/build', 'index.html'));
+});
+
+
+
 /*
     sequalize.sync ensures that our object model is the same as the actual db schema,
     useful for devlopment but probably shouldn't be used in production because we might
-    accidently drop a table if we alter our model schema
+    accidently drop a table if we alter our model schema. Alter; true will only update
+    table schmea not drop or add any tables.
 */
-// db.sequelize.sync({alter: true}).then((req) => {
-app.listen(process.env.PORT || 5001, () => {
-    console.log("lsitneing on: "+ FRONTENDURL ||  " http://localhost:3001\n");
-
+db.sequelize.sync({alter: true}).then((req) => {
+    app.listen(process.env.PORT || 5001, () => {
+        if (DEV) {
+            console.log("lsitneing on: http://localhost:5001\n");
+        } else {
+            console.log("listening on PORT: " + process.env.PORT);
+        }
+    });
 });
-// });
 
 // db.sequelize.sync({ force: true }).then(() => {
 //     // Sync Meal model first
